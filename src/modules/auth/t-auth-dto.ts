@@ -1,4 +1,4 @@
-export type AuthDto = {
+export type TAuthDto = {
     code: string;
     referer: string;
     platform: string;
