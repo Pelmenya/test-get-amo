@@ -2,10 +2,10 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { HttpService } from '@nestjs/axios';
-import { TAuthDto } from './t-auth-dto';
+import { TAuthDto } from './types/t-auth-dto';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
-import { TAuthData } from './t-auth-data';
+import { TAuthData } from './types/t-auth-data';
 
 @Injectable()
 export class AuthService {
@@ -34,11 +34,15 @@ export class AuthService {
         );
         await this.cacheManager.set('host', `https:\/\/${dto.referer}`, 0);
         await this.cacheManager.set('client_id', dto.client_id, 0);
-        await this.cacheManager.set('authData', {
-            ...data,
-            expire_in: data.expire_in * 1000, //миллисекунд
-            time: new Date().getTime(),
-        });
+        await this.cacheManager.set(
+            'authData',
+            {
+                ...data,
+                expire_in: data.expire_in * 1000, //миллисекунд
+                time: new Date().getTime(),
+            },
+            0,
+        );
     }
 
     async validateExpiresIn() {
@@ -62,11 +66,15 @@ export class AuthService {
                     }),
                 ),
             );
-            await this.cacheManager.set('authData', {
-                ...data,
-                expire_in: data.expire_in * 1000, //миллисекунд
-                time: new Date().getTime(),
-            });
+            await this.cacheManager.set(
+                'authData',
+                {
+                    ...data,
+                    expire_in: data.expire_in * 1000, //миллисекунд
+                    time: new Date().getTime(),
+                },
+                0,
+            );
         }
     }
 }
