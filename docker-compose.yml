@@ -1,0 +1,10 @@
+version: "3.9"
+services: 
+  get-amo:
+    build: ./
+    container_name: get-amo
+    ports:
+      - 80:${PORT}
+    environment:      
+      - PORT=${PORT}
+    command: sh -c "cd /app; rm -rf node_modules; npm i -g @nestjs/cli; npm install; npm run start"
