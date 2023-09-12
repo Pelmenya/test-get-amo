@@ -50,9 +50,14 @@ export class UsersService {
         const user = await this.findUser(dto);
 
         if (Object.entries(user).length) {
-            return await this.updateUser(user);
+            const dataUpdateUser = await this.updateUser(user);
+
+            return await this.createLead(dataUpdateUser.id);
         } else {
-            return await this.createUser();
+            const dataCreateUser = await this.createUser();
+            return await this.createLead(
+                dataCreateUser._embedded.contacts[0]['id'],
+            );
         }
     }
 
@@ -97,6 +102,34 @@ export class UsersService {
         const { data } = await firstValueFrom(
             this.httpService
                 .post(`${this.host}/api/v4/contacts`, this.body, this.config)
+                .pipe(
+                    catchError((e: AxiosError) => {
+                        console.log(e);
+                        throw 'An error happened!';
+                    }),
+                ),
+        );
+        return data;
+    }
+
+    async createLead(id: string) {
+        const body = [
+            {
+                name: `Сделка для примера ${new Date().getTime()}`,
+                price: Number(new Date().getTime()),
+                _embedded: {
+                    contacts: [
+                        {
+                            id,
+                        },
+                    ],
+                },
+            },
+        ];
+
+        const { data } = await firstValueFrom(
+            this.httpService
+                .post(`${this.host}/api/v4/leads`, body, this.config)
                 .pipe(
                     catchError((e: AxiosError) => {
                         console.log(e);
