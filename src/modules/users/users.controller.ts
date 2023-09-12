@@ -1,10 +1,13 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { TUserDto } from './types/t-user-dto';
+import { UserDto } from './types/user-dto';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
+    constructor(private readonly usersService: UsersService) {}
+
     @Get('contacts')
-    async getContacts(@Query() dto: TUserDto): Promise<TUserDto> {
-        return Promise.resolve(dto);
+    async getContacts(@Query() dto: UserDto) {
+        return await this.usersService.startUseAPIAmoCRM(dto);
     }
 }
